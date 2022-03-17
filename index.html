@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="shortcut icon" href="./favicon.png">
+		<title>Super Mario 64</title>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	</head>
+	<script>
+		javascript:(function()%7Bvar%20script=document.createElement('script');script.onload=function()%7Bvar%20stats=new%20Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function%20loop()%7Bstats.update();requestAnimationFrame(loop)%7D);%7D;script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);%7D)()
+	</script>
+		<script>
+				alert("[Stick] (Arrows) Move Mario | [D-Pad] (WASD) Move Camera | [Start] (Enter) Pause | [R]     (Q) Camera Reposition | [A]     (X) Jump | [B]     (c) Punch| [Z]     (Space) Crouch| (Also Controller Support) | Zoom out if you dont want the touch screen controls.");
+</script>
+		<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+body, html{
+	background:black;
+	margin: 0;
+	padding: 0;
+	min-height: 100vh;
+	image-rendering: pixelated;
+	scrollbar-width: none;
+	touch-action: none;
+	overscroll-behavior-y: contain;
+	overflow-y:hidden;
+	color:white;
+	font-family: 'Roboto', sans-serif;
+}
+::-webkit-scrollbar {
+	display: none;
+}
+/*#container {
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow:hidden;
+}*/
+.emscripten {
+	display:inline-block;
+	position:fixed;
+	margin:auto;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	width: 100%;
+	height: 100%;
+	overflow:hidden;
+	z-index:3;
+}
+.control{
+	position:absolute;
+	color:white;
+	z-index:5;
+	display:block;
+	line-height: 50px;
+	width:60px;
+	height:60px;
+	text-align:center;
+	border:3px solid black;
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+}
+.control:not([id='debug']):hover { filter: brightness(85%) }
+.control:not([id='debug']):active:hover{ filter: brightness(125%) }
+#up {
+	bottom:58px;
+	border-bottom:none;
+}
+#down {
+	top:58px;
+	border-top:none;
+}
+#right {
+	left: 58px;
+	border-left:none;
+}
+#left {
+	right:58px;
+	border-right:none;
+}
+
+.usagebutton {
+	border-radius:50%;
+	width:70px;
+	height:70px;
+	line-height:70px;
+}
+#abutton{
+	right:0px;
+	bottom:calc(55% - 80px);
+	background:#4545cc;
+}
+#bbutton{
+	right:80px;
+	bottom:55%;
+	background:#3ce094;
+}
+#crouch{
+	right:0px;
+	bottom:calc(55% + 80px);
+	background:#e0433c;
+}
+#camera{
+	left:30px;
+	bottom:calc(15% + 80px);
+	background:#e0433c;
+}
+.controls{
+	position:fixed;
+	width:calc(100% - 40px);
+	height:calc(100% - 40px);
+	margin:auto;
+	z-index:6;
+	left:0;
+	top:0;
+	right:0;
+	bottom:0;
+	display:block;
+}
+.dpad{
+	background:#504c4c;
+	width:60px;
+	height:60px;
+	display:inline-block;
+	position:absolute;
+	right:85px;
+	bottom:60px;
+}
+.dpad div{
+	background:#504c4c;
+}
+.topcontrol{
+	position:absolute;
+	top:0;
+	width:100%;
+	display:flex;
+	height:66px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: row;
+}
+.topcontrol div{
+	position:relative;
+	display:block;
+	margin-left:5px;
+	margin-right:5px;
+	background:#c74040
+}
+#debug{ float:left; }
+.notification{
+	z-index:8;
+	left:0;right:0;top:0;bottom:0;
+	position:absolute;
+	color:white;
+	background:#c74040;
+	border:3px solid black;
+	display:block;
+	width:580px;
+	height:180px;
+	padding:15px;
+	margin:auto;
+}
+.notification .title{
+	font-weight:600;
+	line-height:20px;
+	font-size:25px;
+}
+.notification .desc{
+	font-weight:400;
+}
+.notification .continue{
+	width:100%;
+	text-align:center;
+	position:absolute;
+	border-top:3px solid black;
+	background:#c74040;
+	line-height:50px;
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	bottom:0;left:0;
+	height:50px;
+}
+.notification .continue:hover{
+	filter:brightness(120%);
+}
+.notification .continue:hover:active{
+	filter:brightness(80%);
+}
+#debugMenu {
+	width: 100%;
+	display: none;
+	position: absolute;
+	bottom: -206px;
+	left: -3px;
+	border: 3px solid black;
+	background: #c74040;
+	height: 200px;
+	right: 0;
+	margin: auto;
+}
+#debug:hover {
+	background:#a93636;
+}
+#debug:hover:active{
+	background:#f95050;
+}
+#debugMenu div{
+	border:none;
+	position:relative;
+	right:5px;
+	border-bottom: 3px solid black;
+}
+	</style>
+	</head>
+	<body>
+	<canvas class="emscripten" id="canvas"></canvas>
+	<div class='controls'>
+		<div class='topcontrol'>
+			<div class='control' id='start'>
+				<span class='material-icons' style='line-height:60px'>play_arrow</span>
+			</div>
+			<div class='control' id='fullsrc'>
+				<span class='material-icons' style='line-height:60px'>fullscreen</span>
+			</div>
+			<div class='control' id='debug'>
+				<span class='material-icons' style='line-height:60px'>bug_report</span>
+				<div id='debugMenu'>
+					<div class='control' id='reinitcontrols'>
+						<span class='material-icons' style='line-height:60px'>control_camera</span>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<div class='dpad'>
+			<div class='control' id='up'>
+				<span class='material-icons' style='line-height:60px'>keyboard_arrow_up</span>
+			</div>
+			<div class='control' id='down'>
+				<span class='material-icons' style='line-height:60px'>keyboard_arrow_down</span>
+			</div>
+			<div class='control' id='left'>
+				<span class='material-icons' style='line-height:60px'>keyboard_arrow_left</span>
+			</div>
+			<div class='control' id='right'>
+				<span class='material-icons' style='line-height:60px'>keyboard_arrow_right</span>
+			</div>
+		</div>
+		<div class='usagebutton control' id='abutton'>A</div>
+		<div class='usagebutton control' id='bbutton'>B</div>
+		<div class='usagebutton control' id='crouch'>Z</div>
+		<div class='usagebutton control' id='camera'>R</div>
+		<div id='joystick'></div>
+	</div>
+	<!--<script src="/assets/js/jquery-3.5.1.min.js"></script>-->
+	
+
+	<script src="nipplejs.js"></script>
+    <script>
+function openFullscreen(){
+	if(document.documentElement.requestFullscreen){
+		document.documentElement.requestFullscreen();
+	}else if(document.documentElement.mozRequestFullScreen){
+		document.documentElement.mozRequestFullScreen();
+	}else if(document.documentElement.webkitRequestFullscreen){
+		document.documentElement.webkitRequestFullscreen();
+	}else if(document.documentElement.msRequestFullscreen){
+		document.documentElement.msRequestFullscreen();
+	}
+}
+function closeFullscreen(){
+	if(document.exitFullscreen){
+		document.exitFullscreen();
+	}else if(document.mozCancelFullScreen){
+		document.mozCancelFullScreen();
+	}else if(document.webkitExitFullscreen){
+		document.webkitExitFullscreen();
+	}else if(document.msExitFullscreen){
+		document.msExitFullscreen();
+	}
+}
+var deme=document.getElementById('debugMenu'),
+	open=!open;
+	debugmenu=(()=>{
+		open=!open;
+		if(open==false)deme.style.display='block';
+		else deme.style.display='none';
+	});
+
+var debo=document.getElementById('debug');
+debo.onclick=debugmenu;
+debo.addEventListener('touchend',debugmenu);
+
+var fullsrc=document.getElementById('fullsrc');
+fullsrc.addEventListener('mousedown',bru);
+fullsrc.addEventListener('touchstart',bru);
+function bru(){
+	if(window.fullScreen || (window.innerWidth == screen.width && window.innerHeight == screen.height)) {
+		closeFullscreen();
+		fullsrc.getElementsByTagName('span')[0].innerHTML='fullscreen';
+	}else{
+		openFullscreen();
+		fullsrc.getElementsByTagName('span')[0].innerHTML='fullscreen_exit';
+	}
+}
+var onend=(()=>{ // when 45 degree angle threshold reached
+	simulateKey(38,'ArrowUp','keyup');
+	simulateKey(40,'ArrowDown','keyup');
+	simulateKey(37,'ArrowLeft','keyup');
+	simulateKey(39,'ArrowRight','keyup');
+});
+var moveHandle=((e,d)=>{
+	console.log(d.direction);
+	var c=d.direction,
+		degree=d.angle.degree;
+	console.log(degree);
+	if(degree>=115 && degree<=150){ // up-left
+		console.log('up-left');
+		simulateKey(40,'ArrowDown','keyup');
+		simulateKey(37,'ArrowLeft','keydown');
+		simulateKey(39,'ArrowRight','keyup');
+		simulateKey(38,'ArrowUp','keydown');
+	} else if(degree>=45 && degree<=90){ // up-right
+		console.log('up-right');
+		simulateKey(40,'ArrowDown','keyup');
+		simulateKey(37,'ArrowLeft','keyup');
+		simulateKey(39,'ArrowRight','keydown');
+		simulateKey(38,'ArrowUp','keydown');
+	} else if(degree>=210 && degree<=255){ // down-left
+		console.log('down-left');
+		simulateKey(40,'ArrowDown','keydown');
+		simulateKey(37,'ArrowLeft','keydown');
+		simulateKey(39,'ArrowRight','keyup');
+		simulateKey(38,'ArrowUp','keyup');
+	} else if(degree>=300 && degree<=345){ // down-right
+		console.log('down-right');
+		simulateKey(40,'ArrowDown','keydown');
+		simulateKey(37,'ArrowLeft','keyup');
+		simulateKey(39,'ArrowRight','keydown');
+		simulateKey(38,'ArrowUp','keyup');
+	} else if(c.y=='up' && c.angle=='up'){ // generic up
+		console.log('up');
+		simulateKey(40,'ArrowDown','keyup');
+		simulateKey(37,'ArrowLeft','keyup');
+		simulateKey(39,'ArrowRight','keyup');
+		simulateKey(38,'ArrowUp','keydown');
+	}else if(c.y=='down' && c.angle=='down'){ // generic down
+		console.log('down');
+		simulateKey(38,'ArrowUp','keyup');
+		simulateKey(37,'ArrowLeft','keyup');
+		simulateKey(39,'ArrowRight','keyup');
+		simulateKey(40,'ArrowDown','keydown');
+	}else if(c.x=='left' && c.angle=='left'){ // generic left
+		console.log('left');
+		simulateKey(38,'ArrowUp','keyup');
+		simulateKey(40,'ArrowDown','keyup');
+		simulateKey(39,'ArrowRight','keyup');
+		simulateKey(37,'ArrowLeft','keydown');
+	}else if(c.x=='right' && c.angle=='right'){ // generic right
+		console.log('right');
+		simulateKey(38,'ArrowUp','keyup');
+		simulateKey(40,'ArrowDown','keyup');
+		simulateKey(37,'ArrowLeft','keyup');
+		simulateKey(39,'ArrowRight','keydown');
+	}else{
+		console.log('not set, fix!');
+		//console.log(d.direction);
+	}
+});
+var joystick = nipplejs.create({
+	zone: document.getElementById('joystick'),
+	mode: 'static',
+	position: {left: '70px', bottom: '70px'},
+	color: 'red'
+});
+joystick.on('move',moveHandle);
+
+var ackdac=(()=>{
+	var pn=document.getElementById('joystick').parentNode;
+	document.getElementById('joystick').parentNode.removeChild(document.getElementById('joystick'));
+	var h=document.createElement('div');
+	pn.appendChild(h);
+	h.setAttribute('id','joystick')
+	joystick = nipplejs.create({
+		zone: document.getElementById('joystick'),
+		mode: 'static',
+		position: {left: '70px', bottom: '70px'},
+		color: 'blue'
+	});
+	joystick.on('end',onend);
+	joystick.on('move',moveHandle);
+});
+document.getElementById('reinitcontrols').addEventListener('mousedown',ackdac);
+document.getElementById('reinitcontrols').addEventListener('touchend',ackdac);
+var second=0,
+	fps=0;
+setInterval(()=>{
+	if(second==1){
+		second=0;
+		fps=0;
+	}else{
+		second=second+0.5;
+	}
+	if(second==0.5)console.log(fps*2);
+	if(second==1)console.log(fps);
+
+},500);
+var animate=(e=>{
+	if(second==0)fps=fps+1;
+	requestAnimationFrame(animate);
+});
+requestAnimationFrame(animate);
+joystick.on('end',onend);
+
+var template={
+	altKey:false,
+	bubbles:true,
+	cancelBubble:false,
+	cancelable:true,
+	charCode:0,
+	code:"Enter",
+	composed:true,
+	ctrlKey:false,
+	currentTarget:null,
+	defaultPrevented:true,
+	detail:0,
+	eventPhase:0,
+	explicitOriginalTarget:document.body,
+	isComposing:false,
+	isTrusted:true,
+	key:"Enter",
+	keyCode:13,
+	layerX:0,
+	layerY:0,
+	location:0,
+	metaKey:false,
+	originalTarget:document.body,
+	rangeOffset:0,
+	rangeParent:null,
+	repeat:false,
+	returnValue:false,
+	shiftKey:false,
+	srcElement:document.body,
+	target:document.body,
+	type:"",
+	view:window,
+	which:13
+}
+function simulateKey(keycode,keyname,keytype){
+	var data=template;
+	data.key=keyname;
+	data.keyCode=keycode;
+	data.code=keyname;
+	data.which=keycode;
+	data.type=keytype;
+	if(keyname.length<=1 && keycode != ' ')data.code='Key'+keyname.toUpperCase();
+	document.dispatchEvent(new KeyboardEvent(keytype, data));
+};
+var buttons=[
+	{
+		element:startButton=document.getElementById('start'),
+		keycode:13,
+		keyname:'Enter'
+	},
+	{
+		element:document.getElementById('left'),
+		keycode:65,
+		keyname:'a'
+	},
+	{
+		element:document.getElementById('right'),
+		keycode:68,
+		keyname:'d'
+	},
+	{
+		element:document.getElementById('up'),
+		keycode:87,
+		keyname:'w'
+	},
+	{
+		element:document.getElementById('down'),
+		keycode:83,
+		keyname:'s'
+	},
+	{
+		element:document.getElementById('abutton'),
+		keycode:88,
+		keyname:'x'
+	},
+	{
+		element:document.getElementById('bbutton'),
+		keycode:67,
+		keyname:'c'
+	},
+	{
+		element:document.getElementById('crouch'),
+		keycode:' ',
+		keyname:'Space'
+	},
+	{
+		element:document.getElementById('camera'),
+		keycode:81,
+		keyname:'q'
+	}
+];
+
+buttons.forEach((e,i,a)=>{
+	e.element.addEventListener('touchstart',()=>{
+		simulateKey(e.keycode,e.keyname,'keydown');
+	});
+	e.element.addEventListener('touchend',()=>{
+		simulateKey(e.keycode,e.keyname,'keyup');
+	});
+	e.element.addEventListener('mousedown',()=>{
+		simulateKey(e.keycode,e.keyname,'keydown');
+	});
+	e.element.addEventListener('mouseup',()=>{
+		simulateKey(e.keycode,e.keyname,'keyup');
+	});
+});
+
+document.addEventListener('keydown',e=>{
+	/*buttons.forEach(ee=>{
+		if(ee.keycode==e.which){
+			ee.element.style.filter='brightness(125%)';
+		}
+	});*/
+	console.log('key: '+e.key+' type: '+e.type+' keycode: '+e.which)
+});
+document.addEventListener('keyup',e=>{
+	/*buttons.forEach(ee=>{
+		if(ee.keycode==e.which){
+			ee.element.style.filter='';
+		}
+	});*/
+	console.log('key: '+e.key+' type: '+e.type+' keycode: '+e.which)
+});
+
+var Module = {
+preRun: [],
+postRun: [],
+print: (function() {
+  return function(text) {
+	if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+	console.log(text);
+  };
+})(),
+printErr: function(text) {
+  if (arguments.length > 1)
+	text = Array.prototype.slice.call(arguments).join(' ');
+  console.error(text);
+},
+canvas: (function() {
+  var canvas = document.getElementById('canvas');
+  canvas.width = window.innerWidth; // Todo: how to do this from c++
+  canvas.height = window.innerHeight;
+  canvas.addEventListener("webglcontextlost", function(e) {
+	alert('WebGL context lost. You will need to reload the page.');
+	e.preventDefault();
+  }, false);
+  return canvas;
+})(),
+setStatus: function(text) {
+}
+};
+
+if(parent.location.href.substr(location.origin.length,256)=='/?aa'){
+	parent.location.href=location.href; // cool method
+}
+	</script>
+    <script async type="text/javascript" src="sm64.us.f3dex2e.js"></script>
+  </body>
+</html>
